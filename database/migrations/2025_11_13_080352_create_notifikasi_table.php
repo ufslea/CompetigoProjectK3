@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifikasi', function (Blueprint $table) {
-            $table->id();
+            $table->id('notifikasi_id');
+            $table->foreignId('user_id')->constrained('users', 'user_id')->onDelete('cascade');
+            $table->string('judul', 150);
+            $table->text('pesan');
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }

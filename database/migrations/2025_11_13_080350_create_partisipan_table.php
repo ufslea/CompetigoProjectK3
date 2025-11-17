@@ -8,15 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('partisipan', function (Blueprint $table) {
+        Schema::create('partisipans', function (Blueprint $table) {
             $table->id('partisipan_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('sublomba_id');
             $table->string('institusi')->nullable();
             $table->string('kontak')->nullable();
             $table->string('file_karya')->nullable();
-            $table->string('status')->default('pending');
-            $table->timestamp('registered_at')->useCurrent();
+            $table->enum('status', ['pending', 'approved', 'rejected', 'submitted'])->default('pending');
+            $table->timestamp('registered_at')->nullable();
+            $table->timestamps();
 
             // Foreign keys
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
@@ -26,6 +27,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('partisipan');
+        Schema::dropIfExists('partisipans');
     }
 };

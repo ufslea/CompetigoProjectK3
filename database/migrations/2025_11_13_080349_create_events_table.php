@@ -19,7 +19,7 @@ return new class extends Migration
     $table->string('url')->nullable();
     $table->date('tanggal_mulai');
     $table->date('tanggal_akhir');
-    $table->string('status')->default('aktif');
+    $table->enum('status',['active','draft','finished'])->default('active');
     $table->timestamps();
 });
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sertifikat extends Model
 {
+     protected $table = 'sertifikat';
     protected $primaryKey = 'sertifikat_id';
     protected $fillable = ['partisipan_id', 'sublomba_id', 'gambar'];
 
