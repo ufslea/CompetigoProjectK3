@@ -8,6 +8,8 @@ class SubLomba extends Model
 {
     protected $primaryKey = 'sublomba_id';
     protected $table = 'sub_lomba';
+    public $timestamps = true;
+    
     protected $fillable = [
         'event_id',
         'nama',
@@ -19,25 +21,21 @@ class SubLomba extends Model
         'status'
     ];
 
-    // Relasi ke Event
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id', 'events_id');
     }
 
-    // Relasi ke Partisipan
-    public function partisipan()
+    public function partisipans()
     {
         return $this->hasMany(Partisipan::class, 'sublomba_id', 'sublomba_id');
     }
 
-    // Relasi ke Hasil
     public function hasil()
     {
         return $this->hasMany(Hasil::class, 'sublomba_id', 'sublomba_id');
     }
 
-    // Relasi ke Sertifikat
     public function sertifikat()
     {
         return $this->hasMany(Sertifikat::class, 'sublomba_id', 'sublomba_id');

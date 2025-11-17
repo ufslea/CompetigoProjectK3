@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hasil extends Model
 {
+    protected $table = 'hasil';
     protected $primaryKey = 'hasil_id';
+    public $timestamps = true;
     protected $fillable = ['sublomba_id', 'partisipan_id', 'rank', 'deskripsi'];
 
     // Relasi ke Sub Lomba

@@ -12,14 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('hasil', function (Blueprint $table) {
-    $table->id('hasil_id');
-    $table->foreignId('sublomba_id')->constrained('sub_lomba', 'sublomba_id')->onDelete('cascade');
-    $table->foreignId('partisipan_id')->constrained('partisipan', 'partisipan_id')->onDelete('cascade');
-    $table->integer('rank')->nullable();
-    $table->text('deskripsi')->nullable();
-    $table->timestamps();
-});
+            $table->id('hasil_id');
+            $table->unsignedBigInteger('sublomba_id');
+            $table->unsignedBigInteger('partisipan_id');
+            $table->integer('rank')->nullable();
+            $table->text('deskripsi')->nullable();
+            $table->timestamps();
 
+            $table->foreign('sublomba_id')->references('sublomba_id')->on('sub_lomba')->onDelete('cascade');
+            $table->foreign('partisipan_id')->references('partisipan_id')->on('partisipans')->onDelete('cascade');
+        });
     }
 
     /**

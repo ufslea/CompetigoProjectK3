@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
+    protected $table = 'events';
     protected $primaryKey = 'events_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = true;
+
     protected $fillable = [
         'organizer_id',
         'nama',
@@ -14,7 +19,15 @@ class Event extends Model
         'url',
         'tanggal_mulai',
         'tanggal_akhir',
-        'status'
+        'status',
+        'banner_event',
+    ];
+
+    protected $casts = [
+        'tanggal_mulai' => 'date',
+        'tanggal_akhir' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     // Relasi ke user (penyelenggara)
@@ -33,5 +46,10 @@ class Event extends Model
     public function pengumumans()
     {
         return $this->hasMany(Pengumuman::class, 'events_id', 'events_id');
+    }
+
+    public function favorits()
+    {
+        return $this->hasMany(Favorit::class, 'events_id', 'events_id');
     }
 }

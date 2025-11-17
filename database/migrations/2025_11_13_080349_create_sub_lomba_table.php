@@ -20,7 +20,7 @@ return new class extends Migration
     $table->string('link')->nullable();
     $table->date('deadline')->nullable();
     $table->string('gambar')->nullable();
-    $table->string('status')->default('aktif');
+    $table->enum('status',['open','closed'])->default('open');
     $table->timestamps();
 
     $table->foreign('event_id')->references('events_id')->on('events')->onDelete('cascade');
