@@ -1,59 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Instalasi & Setup
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+1. Clone repo  
+git clone https://github.com/ufslea/CompetigoProjectK3.git
 
-## About Laravel
+cd CompetigoProjectK3
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+2. Install dependensi backend
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+composer install
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+3. Copy file environment
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+cp .env.example .env
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
+4. Generate APP_KEY
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+php artisan key:generate
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+5. Atur database di .env
 
-## Contributing
+Contoh konfigurasi .env:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+DB_CONNECTION=mysql  
+DB_HOST=127.0.0.1  
+DB_PORT=3306  
+DB_DATABASE=competigo  
+DB_USERNAME=root  
+DB_PASSWORD=
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6. Jalankan migrasi dan seeder (jika ada)
 
-## Security Vulnerabilities
+php artisan migrate  
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+php artisan db:seed (untuk saat ini buat manual saja di db)
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+7. Jalankan server
+
+php artisan serve
+
+
+8. Buat branch sendiri
+
+Selalu bikin branch baru sebelum ngedit apa pun.
+
+git checkout -b fitur-login-gwejh
+
+
+9. Lakukan perubahan di VS Code
+
+Setelah selesai, save semua file.
+
+
+10. Cek perubahan apa aja yang dibuat
+
+git status
+
+akan nampilin file mana aja yang berubah (warna merah).
+
+Kalau udah yakin, tambahkan ke staging area:
+
+git add .
+
+titik (.) = semua file yang berubah.
+
+ Atau kalau mau spesifik:
+
+git add app/Http/Controllers/LoginController.php
+
+
+11. Commit 
+
+git commit -m "Menambah fitur login"
+
+
+12. Push ke GitHub
+
+Upload branch ke GitHub (bukan main):
+
+git push origin fitur-login-gwejh
+
+
+13. Sinkronisasi dengan tim (supaya ga bentrok)
+Sebelum mulai ngedit atau push ulang, SELALU lakukan:
+
+git checkout main          # pindah ke main
+
+git pull origin main       # ambil update terbaru dari GitHub
+
+git checkout fitur-login-gwejh   # balik ke branch kita
+
+git merge main             # gabungkan update terbaru ke branch kita
