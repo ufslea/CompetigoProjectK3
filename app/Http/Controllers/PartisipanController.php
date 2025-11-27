@@ -50,8 +50,6 @@ class PartisipanController extends Controller
         return view('partisipan.create', compact('events', 'sublombas'));
     }
 
-    
-
     public function show($id)
     {
         $partisipan = Partisipan::with(['user', 'sublomba.event'])->findOrFail($id);

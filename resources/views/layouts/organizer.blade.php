@@ -30,7 +30,7 @@
         @include('components.sidebar-organizer')
 
         {{-- Main Content --}}
-        <main class="flex-1 bg-[#FFF7F4] p-8 overflow-y-auto">
+        <main class="flex-1 ml-64 bg-[#FFF7F4] p-8 overflow-y-auto">
             {{-- Header Title --}}
             <div class="mb-6 border-b-2 border-indigo-200 pb-3 flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-[#5D688A]">@yield('title', 'Dashboard Organizer')</h1>
