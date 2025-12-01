@@ -12,7 +12,7 @@ class NotifikasiController extends Controller
     public function index()
     {
         // For participant route, show only their notifications
-        if (request()->routeIs('participant.notifications.index')) {
+        if (request()->routeIs('participant.notifications.*')) {
             $notifikasi = Notifikasi::where('user_id', Auth::id())
                 ->orderBy('created_at', 'desc')
                 ->paginate(15);
@@ -42,26 +42,18 @@ class NotifikasiController extends Controller
         return redirect()->route('notifikasi.index')->with('success', 'Notifikasi berhasil dikirim');
     }
 
-    public function show($notifikasi_id)
+    public function destroy(Notifikasi $notifikasi)
     {
-        $notifikasi = Notifikasi::findOrFail($notifikasi_id);
-        
-        if (request()->routeIs('participant.notifications.*')) {
-            if ($notifikasi->user_id !== Auth::id()) {
-                abort(403, 'Unauthorized');
-            }
-            return view('participant.notifications.show', compact('notifikasi'));
-        }
-        
-        return view('notifikasi.show', compact('notifikasi'));
+        $notifikasi->delete();
+        return redirect()->route('notifikasi.index')->with('success', 'Notifikasi berhasil dihapus');
     }
 
-    public function markAsRead($notifikasi_id)
+    public function markAsRead($notification)
     {
-        $notifikasi = Notifikasi::findOrFail($notifikasi_id);
+        $notifikasi = Notifikasi::findOrFail($notification);
         
-        // Check ownership
-        if ($notifikasi->user_id !== Auth::id()) {
+        // Check ownership for participants
+        if (request()->routeIs('participant.notifications.*') && $notifikasi->user_id !== Auth::id()) {
             abort(403, 'Unauthorized');
         }
         
@@ -79,30 +71,11 @@ class NotifikasiController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function destroy($notifikasi_id)
-    {
-        $notifikasi = Notifikasi::findOrFail($notifikasi_id);
-        
-        // Check ownership
-        if ($notifikasi->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
-        
-        $notifikasi->delete();
-        
-        if (request()->routeIs('participant.notifications.*')) {
-            return redirect()->route('participant.notifications.index')
-                ->with('success', 'Notifikasi berhasil dihapus');
-        }
-        
-        return redirect()->route('notifikasi.index')->with('success', 'Notifikasi berhasil dihapus');
-    }
-
     public function destroyAll()
     {
         Notifikasi::where('user_id', Auth::id())->delete();
         
         return redirect()->route('participant.notifications.index')
-            ->with('success', 'Semua notifikasi telah dihapus.');
+            ->with('success', 'All notifications deleted.');
     }
 }

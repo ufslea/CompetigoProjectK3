@@ -84,7 +84,7 @@
             <a href="{{ route('admin.events.participants.index', $event->events_id) }}" class="text-indigo-600 hover:text-indigo-800 text-sm">Lihat Semua</a>
         </div>
         <div class="space-y-2">
-            @forelse($event->subLombas->flatMap->participants->take(5) as $partisipan)
+            @forelse($event->subLombas->flatMap->partisipan->take(5) as $partisipan)
                 <div class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
                     <div>
                         <p class="font-medium text-gray-900">{{ $partisipan->user->nama ?? '-' }}</p>

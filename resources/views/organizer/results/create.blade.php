@@ -28,7 +28,7 @@
 @endif
 
 <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-    <form action="{{ route('organizer.results.store') }}" method="POST">
+    <form action="{{ route('organizer.results.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         {{-- Sublomba --}}
@@ -54,7 +54,7 @@
                 <option value="">-- Pilih Peserta --</option>
                 @foreach($partisipans as $p)
                     <option value="{{ $p->partisipan_id }}" {{ old('partisipan_id') == $p->partisipan_id ? 'selected' : '' }}>
-                        {{ $p->user->nama ?? 'N/A' }} - {{ $p->sublomba?->nama_sublomba ?? 'N/A' }}
+                        {{ $p->user->nama ?? 'N/A' }} - {{ $p->sublomba?->nama ?? 'N/A' }}
                     </option>
                 @endforeach
             </select>
@@ -79,6 +79,32 @@
             @error('deskripsi')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
+        </div>
+
+        {{-- Gambar (Sertifikat) --}}
+        <div class="mb-6">
+            <label for="gambar" class="block text-sm font-medium text-gray-900 mb-2">Gambar Sertifikat (Opsional)</label>
+            <input type="file" name="gambar" id="gambar" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('gambar') border-red-500 @enderror">
+            <p class="text-gray-500 text-sm mt-1">Format: JPEG, PNG, JPG, GIF. Max: 2MB</p>
+            <div id="gambarError" class="text-red-500 text-sm mt-2 font-semibold" style="display:none;"></div>
+            @error('gambar')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+            <script>
+                document.getElementById('gambar').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    const errorDiv = document.getElementById('gambarError');
+                    const maxSize = 2 * 1024 * 1024; // 2MB
+                    
+                    if (file && file.size > maxSize) {
+                        errorDiv.textContent = '❌ File terlalu besar! Maksimal 2MB. File Anda: ' + (file.size / (1024 * 1024)).toFixed(2) + 'MB';
+                        errorDiv.style.display = 'block';
+                        this.value = '';
+                    } else {
+                        errorDiv.style.display = 'none';
+                    }
+                });
+            </script>
         </div>
 
         <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">

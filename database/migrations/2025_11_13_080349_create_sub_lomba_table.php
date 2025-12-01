@@ -21,6 +21,7 @@ return new class extends Migration
     $table->date('deadline')->nullable();
     $table->string('gambar')->nullable();
     $table->enum('status',['open','closed'])->default('open');
+    $table->enum('jenis_sublomba', ['berbayar', 'gratis'])->default('gratis')->comment('Jenis sublomba: berbayar atau gratis');
     $table->timestamps();
 
     $table->foreign('event_id')->references('events_id')->on('events')->onDelete('cascade');

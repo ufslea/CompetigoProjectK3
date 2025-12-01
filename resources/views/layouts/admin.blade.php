@@ -30,8 +30,16 @@
         @include('components.sidebar-admin')
 
         {{-- Main Content --}}
-        <main class="flex-1 bg-[#FFF7F4] overflow-y-auto ml-64 pt-6 px-8">
-            @yield('content')
+        <main class="flex-1 bg-[#FFF7F4] p-8 overflow-y-auto">
+            {{-- Header Title --}}
+            <div class="mb-6 border-b-2 border-indigo-200 pb-3 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-[#5D688A]">@yield('title', 'Dashboard Admin')</h1>
+            </div>
+
+            {{-- Konten Dinamis --}}
+            <div class="bg-white rounded-xl p-6 shadow-soft">
+                @yield('content')
+            </div>
         </main>
     </div>
 

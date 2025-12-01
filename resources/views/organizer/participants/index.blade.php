@@ -24,6 +24,54 @@
             </div>
         @endif
 
+        {{-- Search & Filter Section --}}
+        <div class="mb-6 bg-white rounded-lg shadow-md p-4">
+            <form method="GET" action="{{ route('organizer.participants.index') }}" class="flex items-end gap-4 flex-wrap">
+                {{-- Search Input --}}
+                <div class="flex-1 min-w-60">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cari Peserta</label>
+                    <div class="relative">
+                        <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Nama, email atau institusi..."
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                {{-- Submission Status Filter --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status Submission</label>
+                    <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <option value="">Semua</option>
+                        <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="submitted" {{ $status === 'submitted' ? 'selected' : '' }}>Submitted</option>
+                    </select>
+                </div>
+
+                {{-- Verification Status Filter --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status Verifikasi</label>
+                    <select name="verification_status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <option value="">Semua</option>
+                        <option value="pending" {{ request('verification_status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="approved" {{ request('verification_status') === 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="rejected" {{ request('verification_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    </select>
+                </div>
+
+                {{-- Buttons --}}
+                <div class="flex gap-2">
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                        Cari
+                    </button>
+                    <a href="{{ route('organizer.participants.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+
         {{-- Empty State --}}
         @if($participants->isEmpty())
             <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-12 text-center">
@@ -36,56 +84,66 @@
         @else
             {{-- Participants Table --}}
             <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nama Peserta</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Sub Lomba</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Event</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Institusi</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nama Peserta</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Sub Lomba</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Event</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Institusi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status Submission</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Verifikasi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach($participants as $participant)
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $participant->user->nama ?? 'N/A' }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">{{ $participant->user->email ?? 'N/A' }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-700">{{ $participant->sublomba->nama ?? 'N/A' }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-700">{{ $participant->sublomba->event->nama ?? 'N/A' }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-600">{{ $participant->institusi ?? '-' }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                        {{ $participant->status === 'submitted' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                        {{ $participant->status === 'submitted' ? '📤 Submitted' : '⏳ Pending' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                        {{ $participant->verification_status === 'approved' ? 'bg-green-100 text-green-800' : 
+                                           ($participant->verification_status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                        {{ $participant->verification_status === 'approved' ? '✓ Approved' : 
+                                           ($participant->verification_status === 'rejected' ? '✗ Rejected' : '⏳ Pending') }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="{{ route('organizer.participants.show', $participant->partisipan_id) }}"
+                                       class="text-indigo-600 hover:text-indigo-900 font-medium text-sm">
+                                        Lihat Detail
+                                    </a>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @foreach($participants as $participant)
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $participant->user->nama ?? 'N/A' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-600">{{ $participant->user->email ?? 'N/A' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-700">{{ $participant->sublomba->nama ?? 'N/A' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-700">{{ $participant->sublomba->event->nama ?? 'N/A' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-600">{{ $participant->institusi ?? '-' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                            {{ $participant->status == 'approved' ? 'bg-green-100 text-green-800' : 
-                                               ($participant->status == 'rejected' ? 'bg-red-100 text-red-800' : 
-                                               ($participant->status == 'submitted' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800')) }}">
-                                            {{ ucfirst($participant->status) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="{{ route('organizer.participants.show', $participant->partisipan_id) }}"
-                                           class="inline-flex items-center px-3 py-1 text-sm text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 rounded transition">
-                                            Lihat Detail
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
+            <div class="mt-6">
+                {{ $participants->links('pagination::tailwind') }}
             </div>
         @endif
     </div>

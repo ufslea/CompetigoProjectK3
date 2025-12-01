@@ -42,57 +42,46 @@ Route::middleware(['auth', 'organizer'])
         Route::get('/dashboard', [OrganizerController::class, 'dashboard'])->name('dashboard');
 
         // EVENT
-        Route::prefix('events')->as('events.')->group(function () {
-            Route::get('/', [EventController::class, 'index'])->name('index');
-            Route::get('/create', [EventController::class, 'create'])->name('create');
-            Route::post('/', [EventController::class, 'store'])->name('store');
-            Route::get('/{id}', [EventController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [EventController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [EventController::class, 'update'])->name('update');
-            Route::delete('/{id}', [EventController::class, 'destroy'])->name('destroy');
+        Route::get('/events', [EventController::class, 'index'])->name('events.index');
+        Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+        Route::post('/events', [EventController::class, 'store'])->name('events.store');
+        Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
+        Route::get('/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
+        Route::put('/events/{id}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 
-            // SUB-LOMBA dalam event
-            Route::prefix('{event_id}/sublomba')->as('sublomba.')->group(function () {
-                Route::get('/', [SubLombaController::class, 'index'])->name('index');
-                Route::get('/create', [SubLombaController::class, 'create'])->name('create');
-                Route::post('/', [SubLombaController::class, 'store'])->name('store');
-                Route::get('/{id}/edit', [SubLombaController::class, 'edit'])->name('edit');
-                Route::put('/{id}', [SubLombaController::class, 'update'])->name('update');
-                Route::delete('/{id}', [SubLombaController::class, 'destroy'])->name('destroy');
-            });
-        });
+        // SUB-LOMBA
+        Route::get('/events/{event_id}/sublomba', [SubLombaController::class, 'index'])->name('sublomba.index');
+        Route::get('/events/{event_id}/sublomba/create', [SubLombaController::class, 'create'])->name('sublomba.create');
+        Route::post('/events/{event_id}/sublomba', [SubLombaController::class, 'store'])->name('sublomba.store');
+        Route::get('/sublomba/{id}/edit', [SubLombaController::class, 'edit'])->name('sublomba.edit');
+        Route::put('/sublomba/{id}', [SubLombaController::class, 'update'])->name('sublomba.update');
+        Route::delete('/sublomba/{id}', [SubLombaController::class, 'destroy'])->name('sublomba.destroy');
 
         // PARTICIPANTS
         Route::get('/participants', [PartisipanController::class, 'index'])->name('participants.index');
         Route::get('/participants/{id}', [PartisipanController::class, 'show'])->name('participants.show');
 
         // ANNOUNCEMENTS
-        Route::prefix('announcements')->as('announcements.')->group(function () {
-            Route::get('/', [PengumumanController::class, 'index'])->name('index');
-            Route::get('/create', [PengumumanController::class, 'create'])->name('create');
-            Route::post('/', [PengumumanController::class, 'store'])->name('store');
-            Route::get('/{id}', [PengumumanController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [PengumumanController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [PengumumanController::class, 'update'])->name('update');
-            Route::delete('/{id}', [PengumumanController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('/announcements', [PengumumanController::class, 'index'])->name('announcements.index');
+        Route::get('/announcements/create', [PengumumanController::class, 'create'])->name('announcements.create');
+        Route::post('/announcements', [PengumumanController::class, 'store'])->name('announcements.store');
+        Route::get('/announcements/{id}', [PengumumanController::class, 'show'])->name('announcements.show');
+        Route::get('/announcements/{id}/edit', [PengumumanController::class, 'edit'])->name('announcements.edit');
+        Route::put('/announcements/{id}', [PengumumanController::class, 'update'])->name('announcements.update');
+        Route::delete('/announcements/{id}', [PengumumanController::class, 'destroy'])->name('announcements.destroy');
 
         // RESULTS
-        Route::prefix('results')->as('results.')->group(function () {
-            Route::get('/', [HasilController::class, 'index'])->name('index');
-            Route::get('/create', [HasilController::class, 'create'])->name('create');
-            Route::post('/', [HasilController::class, 'store'])->name('store');
-            Route::get('/{id}/edit', [HasilController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [HasilController::class, 'update'])->name('update');
-            Route::delete('/{id}', [HasilController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('/results', [HasilController::class, 'index'])->name('results.index');
+        Route::get('/results/create', [HasilController::class, 'create'])->name('results.create');
+        Route::post('/results', [HasilController::class, 'store'])->name('results.store');
+        Route::get('/results/{id}/edit', [HasilController::class, 'edit'])->name('results.edit');
+        Route::put('/results/{id}', [HasilController::class, 'update'])->name('results.update');
 
         // USER PROFILE
-        Route::prefix('profile')->as('profile.')->group(function () {
-            Route::get('/', [OrganizerProfileController::class, 'index'])->name('index');
-            Route::get('/edit', [OrganizerProfileController::class, 'edit'])->name('edit');
-            Route::put('/update', [OrganizerProfileController::class, 'update'])->name('update');
-        });
+        Route::get('/profile', [OrganizerProfileController::class, 'index'])->name('profile.index');
+        Route::get('/profile/edit', [OrganizerProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/update', [OrganizerProfileController::class, 'update'])->name('profile.update');
     });
 
 // ===================================
@@ -109,8 +98,6 @@ Route::prefix('admin')
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::get('/{user}', [UserController::class, 'show'])->name('show');
             Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
-            Route::put('/{user}', [UserController::class, 'update'])->name('update');
-            Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
         });
 
         // EVENTS
@@ -160,15 +147,6 @@ Route::prefix('admin')
     });
 
 // ===================================
-// FAVORITE ROUTES (Global - accessible to all authenticated users)
-// ===================================
-Route::middleware('auth')->group(function () {
-    Route::post('/favorit', [FavoritController::class, 'store'])->name('favorit.store');
-    Route::delete('/favorit/{events_id}', [FavoritController::class, 'destroy'])->name('favorit.destroy');
-    Route::get('/favorit', [FavoritController::class, 'index'])->name('favorit.index');
-});
-
-// ===================================
 // PARTICIPANT ROUTES
 // ===================================
 Route::middleware(['auth', 'participant'])
@@ -183,7 +161,6 @@ Route::middleware(['auth', 'participant'])
             Route::get('/{competition}/register', [PartisipanController::class, 'register'])->name('register');
             Route::post('/{competition}/register', [PartisipanController::class, 'storeRegistration'])->name('register.store');
             Route::get('/{competition}/create', [PartisipanController::class, 'create'])->name('create');
-            Route::post('/{competition}', [PartisipanController::class, 'store'])->name('store');
             Route::post('/{competition}/submit', [PartisipanController::class, 'submit'])->name('submit');
             Route::get('/{competition}/edit/{submission}', [PartisipanController::class, 'edit'])->name('edit');
             Route::put('/{competition}/update/{submission}', [PartisipanController::class, 'update'])->name('update');
@@ -201,12 +178,12 @@ Route::middleware(['auth', 'participant'])
 
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [NotifikasiController::class, 'index'])->name('index');
-            Route::post('/{notifikasi_id}/mark-as-read', [NotifikasiController::class, 'markAsRead'])->name('mark-as-read');
+            Route::post('/{notification}/mark-as-read', [NotifikasiController::class, 'markAsRead'])->name('mark-as-read');
             Route::post('/mark-all-as-read', [NotifikasiController::class, 'markAllAsRead'])->name('mark-all-as-read');
-            Route::delete('/{notifikasi_id}', [NotifikasiController::class, 'destroy'])->name('destroy');
+            Route::delete('/{notification}/delete', [NotifikasiController::class, 'destroy'])->name('destroy');
             Route::delete('/delete-all', [NotifikasiController::class, 'destroyAll'])->name('destroy-all');
         });
-        
+
         Route::prefix('profile')->name('profile.')->group(function () {
             Route::get('/', [AdminDashboardController::class, 'profile'])->name('index');
             Route::put('/update', [AdminDashboardController::class, 'updateProfile'])->name('update');
@@ -227,16 +204,14 @@ Route::middleware(['auth', 'participant'])
     });
 
 // ===================================
-// SHARED AUTH & PROFILE ROUTES (All roles)
+// AUTH & PROFILE ROUTES
 // ===================================
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    // Shared profile routes for all authenticated users
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

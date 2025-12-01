@@ -10,7 +10,7 @@
 
         <h1 class="text-3xl font-bold mb-6">Edit Event</h1>
 
-        <form action="{{ route('organizer.events.update', $event->events_id) }}" method="POST"
+        <form action="{{ route('organizer.events.update', $event->events_id) }}" method="POST" enctype="multipart/form-data"
               class="bg-white shadow-md rounded-2xl p-8">
             @csrf @method('PUT')
 
@@ -20,6 +20,33 @@
                 <label class="font-semibold">Nama Event</label>
                 <input type="text" name="nama" value="{{ $event->nama }}" 
                        class="w-full mt-1 p-3 rounded-xl border" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="font-semibold">Gambar Banner Event</label>
+                @if($event->gambar)
+                    <div class="mb-3">
+                        <img src="{{ asset('storage/' . $event->gambar) }}" alt="Event Banner" class="max-w-xs rounded-xl shadow">
+                    </div>
+                @endif
+                <input type="file" name="gambar" id="gambarEditInput" accept="image/*" class="w-full mt-1 p-3 rounded-xl border">
+                <p class="text-gray-500 text-sm mt-1">Format: JPEG, PNG, JPG, GIF. Max: 2MB. Biarkan kosong untuk tidak mengubah gambar.</p>
+                <div id="gambarEditError" class="text-red-500 text-sm mt-2 font-semibold" style="display:none;"></div>
+                <script>
+                    document.getElementById('gambarEditInput').addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        const errorDiv = document.getElementById('gambarEditError');
+                        const maxSize = 2 * 1024 * 1024; // 2MB
+                        
+                        if (file && file.size > maxSize) {
+                            errorDiv.textContent = '❌ File terlalu besar! Maksimal 2MB. File Anda: ' + (file.size / (1024 * 1024)).toFixed(2) + 'MB';
+                            errorDiv.style.display = 'block';
+                            this.value = '';
+                        } else {
+                            errorDiv.style.display = 'none';
+                        }
+                    });
+                </script>
             </div>
 
             <div class="mb-4">

@@ -45,8 +45,8 @@
             <div class="bg-white shadow-sm rounded-xl overflow-hidden border border-gray-100">
 
                 {{-- Banner --}}
-                @if ($event->banner_event)
-                    <img src="{{ asset('storage/' . $event->banner_event) }}"
+                @if ($event->gambar)
+                    <img src="{{ asset('storage/' . $event->gambar) }}"
                          class="w-full h-40 object-cover">
                 @else
                     <div class="w-full h-40 bg-gray-200 flex items-center justify-center text-gray-500">

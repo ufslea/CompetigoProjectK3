@@ -56,9 +56,9 @@ class LaporanController extends Controller
     }
 
     // GET participant/reports/{laporan}/edit → form edit laporan
-    public function edit($laporan_id)
+    public function edit($id)
     {
-        $laporan = Laporan::with(['pelapor', 'event'])->findOrFail($laporan_id);
+        $laporan = Laporan::with(['pelapor', 'event'])->findOrFail($id);
         
         // Pastikan hanya pemilik yang bisa edit
         if (request()->routeIs('participant.reports.*') && $laporan->pelapor_id !== Auth::id()) {
@@ -75,9 +75,9 @@ class LaporanController extends Controller
     }
 
     // PUT/PATCH participant/reports/{laporan} atau admin/reports/{laporan}
-    public function update(Request $request, $laporan_id)
+    public function update(Request $request, $id)
     {
-        $laporan = Laporan::findOrFail($laporan_id);
+        $laporan = Laporan::findOrFail($id);
         
         if (request()->routeIs('participant.reports.*')) {
             // Participant update laporan mereka sendiri
@@ -111,9 +111,9 @@ class LaporanController extends Controller
     }
 
     // DELETE participant/reports/{laporan}
-    public function destroy($laporan_id)
+    public function destroy($id)
     {
-        $laporan = Laporan::findOrFail($laporan_id);
+        $laporan = Laporan::findOrFail($id);
         
         // Hanya pemilik yang bisa delete
         if ($laporan->pelapor_id !== Auth::id()) {
@@ -127,9 +127,9 @@ class LaporanController extends Controller
     }
 
     // GET admin/reports/{laporan} → show detail
-    public function show($laporan_id)
+    public function show($id)
     {
-        $laporan = Laporan::with(['pelapor', 'event'])->findOrFail($laporan_id);
+        $laporan = Laporan::with(['pelapor', 'event'])->findOrFail($id);
         return view('admin.reports.show', compact('laporan'));
     }
 }

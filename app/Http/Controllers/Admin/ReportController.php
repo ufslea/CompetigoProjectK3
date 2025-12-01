@@ -17,15 +17,15 @@ class ReportController extends Controller
         return view('admin.reports.index', compact('laporans'));
     }
 
-    public function edit($laporan_id)
+    public function edit($id)
     {
-        $report = Laporan::with(['pelapor', 'event'])->findOrFail($laporan_id);
+        $report = Laporan::with(['pelapor', 'event'])->findOrFail($id);
         return view('admin.reports.edit', compact('report'));
     }
 
-    public function update(Request $request, $laporan_id)
+    public function update(Request $request, $id)
     {
-        $report = Laporan::findOrFail($laporan_id);
+        $report = Laporan::findOrFail($id);
         
         $validated = $request->validate([
             'status'     => 'required|in:pending,processed,finished,refused',
@@ -38,9 +38,9 @@ class ReportController extends Controller
             ->with('success', 'Laporan berhasil diperbarui.');
     }
 
-    public function show($laporan_id)
+    public function show($id)
     {
-        $laporan = Laporan::with(['pelapor', 'event'])->findOrFail($laporan_id);
+        $laporan = Laporan::with(['pelapor', 'event'])->findOrFail($id);
         return view('admin.reports.show', compact('laporan'));
     }
 }
