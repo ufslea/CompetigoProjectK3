@@ -18,7 +18,9 @@ class SubLomba extends Model
         'link',
         'deadline',
         'gambar',
-        'status'
+        'status',
+        'jenis_sublomba',
+        'requires_submission'
     ];
 
     public function event()

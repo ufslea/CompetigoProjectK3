@@ -10,57 +10,34 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $table = 'users';
     protected $primaryKey = 'user_id';
-    public $timestamps = true;
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
+    protected $fillable = ['nama', 'email', 'password', 'role', 'no_hp', 'institusi'];
 
-    protected $fillable = [
-        'nama',
-        'email',
-        'password',
-        'role',
-        'nomor_identitas',
-        'institusi',
-        'no_telepon',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
+    protected $hidden = ['password', 'remember_token'];
+    
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-    // Relasi ke Favorit
-    public function favorits()
+    // Relasi ke tabel Event (sebagai penyelenggara)
+    public function events()
     {
-        return $this->hasMany(Favorit::class, 'user_id', 'user_id');
+        return $this->hasMany(Event::class, 'organizer_id', 'user_id');
     }
 
-    // Relasi ke Partisipan
-    public function partisipans()
+    // Relasi ke tabel Partisipan
+    public function partisipan()
     {
         return $this->hasMany(Partisipan::class, 'user_id', 'user_id');
     }
 
-    // Relasi ke Notifikasi
-    public function notifikasis()
+    // Relasi ke tabel Notifikasi
+    public function notifikasi()
     {
         return $this->hasMany(Notifikasi::class, 'user_id', 'user_id');
-    }
-
-    // Relasi ke Event (untuk organizer)
-    public function events()
-    {
-        return $this->hasMany(Event::class, 'user_id', 'user_id');
-    }
-
-    // Relasi ke Laporan
-    public function laporans()
-    {
-        return $this->hasMany(Laporan::class, 'pelapor_id', 'user_id');
     }
 }

@@ -10,7 +10,7 @@ class PengumumanController extends Controller
 {
     public function index()
     {
-        $pengumumans = Pengumuman::with('event')->orderBy('created_at', 'desc')->paginate(15);
+        $pengumumans = Pengumuman::with('event')->get();
         
         if (request()->routeIs('organizer.announcements.*')) {
             return view('organizer.announcements.index', compact('pengumumans'));
@@ -36,41 +36,21 @@ class PengumumanController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'events_id' => 'required|integer|exists:events,events_id',
-            'judul' => 'required|string|max:255',
+        $request->validate([
+            'events_id' => 'required|exists:events,events_id',
+            'judul' => 'required|string',
             'isi' => 'required|string',
         ]);
 
-        try {
-            Pengumuman::create($validated);
-            
-            if (request()->routeIs('organizer.announcements.*')) {
-                return redirect()->route('organizer.announcements.index')
-                    ->with('success', 'Pengumuman berhasil ditambahkan');
-            } elseif (request()->routeIs('admin.announcements.*')) {
-                return redirect()->route('admin.announcements.index')
-                    ->with('success', 'Pengumuman berhasil ditambahkan');
-            }
-            
-            return redirect()->route('pengumuman.index')
-                ->with('success', 'Pengumuman berhasil ditambahkan');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menambahkan pengumuman: ' . $e->getMessage())->withInput();
-        }
-    }
-
-    public function show($id)
-    {
-        $pengumuman = Pengumuman::with('event')->findOrFail($id);
+        Pengumuman::create($request->all());
         
-        if (request()->routeIs('organizer.announcements.show')) {
-            return view('organizer.announcements.show', compact('pengumuman'));
-        } elseif (request()->routeIs('admin.announcements.show')) {
-            return view('admin.announcements.show', compact('pengumuman'));
+        if (request()->routeIs('organizer.announcements.*')) {
+            return redirect()->route('organizer.announcements.index')->with('success', 'Pengumuman berhasil ditambahkan');
+        } elseif (request()->routeIs('admin.announcements.*')) {
+            return redirect()->route('admin.announcements.index')->with('success', 'Pengumuman berhasil ditambahkan');
         }
         
-        return view('pengumuman.show', compact('pengumuman'));
+        return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -90,29 +70,15 @@ class PengumumanController extends Controller
     public function update(Request $request, $id)
     {
         $pengumuman = Pengumuman::findOrFail($id);
+        $pengumuman->update($request->all());
         
-        $validated = $request->validate([
-            'events_id' => 'required|integer|exists:events,events_id',
-            'judul' => 'required|string|max:255',
-            'isi' => 'required|string',
-        ]);
-
-        try {
-            $pengumuman->update($validated);
-            
-            if (request()->routeIs('organizer.announcements.*')) {
-                return redirect()->route('organizer.announcements.index')
-                    ->with('success', 'Pengumuman berhasil diperbarui');
-            } elseif (request()->routeIs('admin.announcements.*')) {
-                return redirect()->route('admin.announcements.index')
-                    ->with('success', 'Pengumuman berhasil diperbarui');
-            }
-            
-            return redirect()->route('pengumuman.index')
-                ->with('success', 'Pengumuman berhasil diperbarui');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memperbarui pengumuman: ' . $e->getMessage())->withInput();
+        if (request()->routeIs('organizer.announcements.*')) {
+            return redirect()->route('organizer.announcements.index')->with('success', 'Pengumuman berhasil diperbarui');
+        } elseif (request()->routeIs('admin.announcements.*')) {
+            return redirect()->route('admin.announcements.index')->with('success', 'Pengumuman berhasil diperbarui');
         }
+        
+        return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -121,15 +87,26 @@ class PengumumanController extends Controller
         $pengumuman->delete();
         
         if (request()->routeIs('organizer.announcements.*')) {
-            return redirect()->route('organizer.announcements.index')
-                ->with('success', 'Pengumuman berhasil dihapus');
+            return redirect()->route('organizer.announcements.index')->with('success', 'Pengumuman berhasil dihapus');
         } elseif (request()->routeIs('admin.announcements.*')) {
-            return redirect()->route('admin.announcements.index')
-                ->with('success', 'Pengumuman berhasil dihapus');
+            return redirect()->route('admin.announcements.index')->with('success', 'Pengumuman berhasil dihapus');
         }
         
-        return redirect()->route('pengumuman.index')
-            ->with('success', 'Pengumuman berhasil dihapus');
+        return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil dihapus');
+    }
+
+    public function show($id)
+    {
+        $pengumuman = Pengumuman::with('event')->findOrFail($id);
+        
+        // Check route context to return appropriate view
+        if (request()->routeIs('organizer.announcements.show')) {
+            return view('organizer.announcements.show', compact('pengumuman'));
+        } elseif (request()->routeIs('admin.announcements.show')) {
+            return view('admin.announcements.show', compact('pengumuman'));
+        }
+        
+        return view('pengumuman.show', compact('pengumuman'));
     }
 
     public function announcement($competition)

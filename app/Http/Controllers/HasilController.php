@@ -41,7 +41,7 @@ class HasilController extends Controller
     {
         $request->validate([
             'sublomba_id' => 'required|exists:sub_lomba,sublomba_id',
-            'partisipan_id' => 'required|exists:partisipans,partisipan_id',
+            'partisipan_id' => 'required|exists:partisipan,partisipan_id',
             'rank' => 'required|integer',
             'deskripsi' => 'nullable|string'
         ]);

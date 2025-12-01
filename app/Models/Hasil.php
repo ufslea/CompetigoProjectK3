@@ -9,7 +9,7 @@ class Hasil extends Model
     protected $table = 'hasil';
     protected $primaryKey = 'hasil_id';
     public $timestamps = true;
-    protected $fillable = ['sublomba_id', 'partisipan_id', 'rank', 'deskripsi'];
+    protected $fillable = ['sublomba_id', 'partisipan_id', 'rank', 'deskripsi', 'gambar'];
 
     // Relasi ke Sub Lomba
     public function sublomba()

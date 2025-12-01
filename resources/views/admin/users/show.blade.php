@@ -45,12 +45,12 @@
             <div class="space-y-3">
                 <div class="p-4 bg-blue-50 rounded-lg">
                     <p class="text-sm font-medium text-blue-600">Total Partisipasi</p>
-                    <p class="text-2xl font-bold text-blue-900">{{ $user->partisipans()->count() ?? 0 }}</p>
+                    <p class="text-2xl font-bold text-blue-900">{{ $user->partisipan->count() ?? 0 }}</p>
                 </div>
                 @if($user->role == 'organizer')
                     <div class="p-4 bg-green-50 rounded-lg">
                         <p class="text-sm font-medium text-green-600">Total Event</p>
-                        <p class="text-2xl font-bold text-green-900">{{ $user->events()->count() ?? 0 }}</p>
+                        <p class="text-2xl font-bold text-green-900">{{ $user->events->count() ?? 0 }}</p>
                     </div>
                 @endif
             </div>

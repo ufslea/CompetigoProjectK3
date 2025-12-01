@@ -12,6 +12,13 @@
 
         <div class="bg-white shadow-md rounded-2xl p-6 mb-8">
 
+            @if($event->gambar)
+                <div class="mb-4">
+                    <img src="{{ asset('storage/' . $event->gambar) }}" alt="{{ $event->nama }}" 
+                         class="w-full h-64 object-cover rounded-lg">
+                </div>
+            @endif
+
             <p class="text-gray-700 mb-4">{{ $event->deskripsi }}</p>
 
             <p class="mb-2">

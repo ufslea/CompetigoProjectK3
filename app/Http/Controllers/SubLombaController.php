@@ -11,10 +11,10 @@ class SubLombaController extends Controller
     public function index($event_id = null)
     {
         if ($event_id) {
-            $event = Event::findOrFail($event_id);
+            $event = \App\Models\Event::findOrFail($event_id);
             $subLombas = SubLomba::where('event_id', $event_id)->with('event')->get();
             
-            if (request()->routeIs('organizer.events.sublomba.*')) {
+            if (request()->routeIs('organizer.sublomba.*')) {
                 return view('organizer.events.sublomba.index', compact('subLombas', 'event'));
             } elseif (request()->routeIs('admin.events.sublomba.*')) {
                 return view('admin.events.sublomba.index', compact('subLombas', 'event'));
@@ -27,96 +27,81 @@ class SubLombaController extends Controller
 
     public function create($event_id = null)
     {
-        $event = Event::findOrFail($event_id);
-        
-        if (request()->routeIs('organizer.events.sublomba.*')) {
-            return view('organizer.events.sublomba.create', compact('event'));
-        } elseif (request()->routeIs('admin.events.sublomba.*')) {
-            return view('admin.events.sublomba.create', compact('event'));
+        if ($event_id) {
+            $event = Event::findOrFail($event_id);
+            if (request()->routeIs('organizer.sublomba.*')) {
+                return view('organizer.events.sublomba.create', compact('event'));
+            }
         }
         
-        return view('sublomba.create', compact('event'));
+        $events = Event::all();
+        return view('sublomba.create', compact('events'));
     }
 
-    public function store(Request $request, $event_id = null)
+    public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'link' => 'nullable|url',
-            'deadline' => 'required|date|after:today',
-            'status' => 'required|in:open,closed',
-        ]);
-
-        $validated['event_id'] = $event_id;
-
-        SubLomba::create($validated);
-        
-        if (request()->routeIs('organizer.events.sublomba.*')) {
-            return redirect()->route('organizer.events.show', $event_id)->with('success', 'Sub Lomba berhasil ditambahkan');
-        } elseif (request()->routeIs('admin.events.sublomba.*')) {
-            return redirect()->route('admin.events.show', $event_id)->with('success', 'Sub Lomba berhasil ditambahkan');
-        }
-        
-        return redirect()->route('events.show', $event_id)->with('success', 'Sub Lomba berhasil ditambahkan');
-    }
-
-    public function show($event_id, $id)
-    {
-        $subLomba = SubLomba::where('event_id', $event_id)->findOrFail($id);
-        return view('sublomba.show', compact('subLomba'));
-    }
-
-    public function edit($event_id, $id)
-    {
-        $event = Event::findOrFail($event_id);
-        $subLomba = SubLomba::where('event_id', $event_id)->findOrFail($id);
-        
-        if (request()->routeIs('organizer.events.sublomba.*')) {
-            return view('organizer.events.sublomba.edit', compact('subLomba', 'event'));
-        } elseif (request()->routeIs('admin.events.sublomba.*')) {
-            return view('admin.events.sublomba.edit', compact('subLomba', 'event'));
-        }
-        
-        return view('sublomba.edit', compact('subLomba', 'event'));
-    }
-
-    public function update(Request $request, $event_id, $id)
-    {
-        $subLomba = SubLomba::where('event_id', $event_id)->findOrFail($id);
-        
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'link' => 'nullable|url',
+        $request->validate([
+            'event_id' => 'required|exists:events,events_id',
+            'nama' => 'required',
+            'kategori' => 'required',
+            'deskripsi' => 'nullable',
+            'link' => 'nullable|string',
             'deadline' => 'required|date',
-            'status' => 'required|in:open,closed',
+            'gambar' => 'nullable|string',
+            'status' => 'required|enum'
         ]);
 
-        $subLomba->update($validated);
+        $subLomba = SubLomba::create($request->all());
         
-        if (request()->routeIs('organizer.events.sublomba.*')) {
-            return redirect()->route('organizer.events.show', $event_id)->with('success', 'Sub Lomba berhasil diperbarui');
-        } elseif (request()->routeIs('admin.events.sublomba.*')) {
-            return redirect()->route('admin.events.show', $event_id)->with('success', 'Sub Lomba berhasil diperbarui');
+        if (request()->routeIs('organizer.sublomba.*')) {
+            return redirect()->route('organizer.sublomba.index', $request->event_id)->with('success', 'Sub Lomba berhasil ditambahkan');
         }
-        
-        return redirect()->route('events.show', $event_id)->with('success', 'Sub Lomba berhasil diperbarui');
+        return redirect()->route('sublomba.index')->with('success', 'Sub Lomba berhasil ditambahkan');
     }
 
-    public function destroy($event_id, $id)
+    public function edit($id)
     {
-        $subLomba = SubLomba::where('event_id', $event_id)->findOrFail($id);
-        $subLomba->delete();
+        $sublomba = SubLomba::findOrFail($id);
+        $events = Event::all();
         
-        if (request()->routeIs('organizer.events.sublomba.*')) {
-            return redirect()->route('organizer.events.show', $event_id)->with('success', 'Sub Lomba berhasil dihapus');
+        if (request()->routeIs('organizer.sublomba.*')) {
+            return view('organizer.events.sublomba.edit', compact('sublomba', 'events'));
         } elseif (request()->routeIs('admin.events.sublomba.*')) {
-            return redirect()->route('admin.events.show', $event_id)->with('success', 'Sub Lomba berhasil dihapus');
+            return view('admin.events.sublomba.edit', compact('sublomba', 'events'));
         }
         
-        return redirect()->route('events.show', $event_id)->with('success', 'Sub Lomba berhasil dihapus');
+        return view('sublomba.edit', compact('sublomba', 'events'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $sublomba = SubLomba::findOrFail($id);
+        
+        $request->validate([
+            'nama' => 'required',
+            'kategori' => 'required',
+            'deadline' => 'required|date',
+        ]);
+
+        $sublomba->update($request->all());
+        
+        if (request()->routeIs('organizer.sublomba.*')) {
+            return redirect()->route('organizer.sublomba.index', $sublomba->event_id)->with('success', 'Sub Lomba berhasil diperbarui');
+        } elseif (request()->routeIs('admin.events.sublomba.*')) {
+            return redirect()->route('admin.events.sublomba.index', ['event_id' => $sublomba->event_id])->with('success', 'Sub Lomba berhasil diperbarui');
+        }
+        return redirect()->route('sublomba.index')->with('success', 'Sub Lomba berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        $sublomba = SubLomba::findOrFail($id);
+        $event_id = $sublomba->event_id;
+        $sublomba->delete();
+        
+        if (request()->routeIs('organizer.sublomba.*')) {
+            return redirect()->route('organizer.sublomba.index', $event_id)->with('success', 'Sub Lomba berhasil dihapus');
+        }
+        return redirect()->route('sublomba.index')->with('success', 'Sub Lomba berhasil dihapus');
     }
 }

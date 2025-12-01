@@ -10,7 +10,7 @@
 
         <h1 class="text-3xl font-bold mb-6">Tambah Event</h1>
 
-        <form action="{{ route('organizer.events.store') }}" method="POST"
+        <form action="{{ route('organizer.events.store') }}" method="POST" enctype="multipart/form-data"
               class="bg-white shadow-md rounded-2xl p-8">
             @csrf
 
@@ -23,6 +23,31 @@
                 @error('nama')
                     <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
                 @enderror
+            </div>
+
+            <div class="mb-4">
+                <label class="font-semibold">Gambar Banner Event</label>
+                <input type="file" name="gambar" id="gambarInput" accept="image/*" class="w-full mt-1 p-3 rounded-xl border @error('gambar') border-red-500 @enderror">
+                <p class="text-gray-500 text-sm mt-1">Format: JPEG, PNG, JPG, GIF. Max: 2MB</p>
+                <div id="gambarError" class="text-red-500 text-sm mt-2 font-semibold" style="display:none;"></div>
+                @error('gambar')
+                    <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                @enderror
+                <script>
+                    document.getElementById('gambarInput').addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        const errorDiv = document.getElementById('gambarError');
+                        const maxSize = 2 * 1024 * 1024; // 2MB
+                        
+                        if (file && file.size > maxSize) {
+                            errorDiv.textContent = '❌ File terlalu besar! Maksimal 2MB. File Anda: ' + (file.size / (1024 * 1024)).toFixed(2) + 'MB';
+                            errorDiv.style.display = 'block';
+                            this.value = '';
+                        } else {
+                            errorDiv.style.display = 'none';
+                        }
+                    });
+                </script>
             </div>
 
             <div class="mb-4">

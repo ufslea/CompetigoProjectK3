@@ -20,7 +20,7 @@ class Event extends Model
         'tanggal_mulai',
         'tanggal_akhir',
         'status',
-        'banner_event',
+        'gambar',
     ];
 
     protected $casts = [

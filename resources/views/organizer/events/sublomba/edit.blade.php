@@ -83,6 +83,52 @@
                     @enderror
                 </div>
 
+                <div class="mb-4">
+                    <label class="block mb-1 font-semibold text-[#1D3557]">Jenis Sub Lomba</label>
+                    <div class="flex gap-6 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="jenis_sublomba" value="gratis"
+                                   @checked($subLomba->jenis_sublomba == 'gratis')
+                                   class="w-4 h-4">
+                            <span class="text-gray-700">Gratis</span>
+                            <span class="text-xs text-gray-500">(Perlu bukti follow sosmed)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="jenis_sublomba" value="berbayar"
+                                   @checked($subLomba->jenis_sublomba == 'berbayar')
+                                   class="w-4 h-4">
+                            <span class="text-gray-700">Berbayar</span>
+                            <span class="text-xs text-gray-500">(Perlu bukti pembayaran)</span>
+                        </label>
+                    </div>
+                    @error('jenis_sublomba')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-1 font-semibold text-[#1D3557]">Requirement Submission</label>
+                    <div class="flex gap-6 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="requires_submission" value="1"
+                                   @checked($subLomba->requires_submission == 1)
+                                   class="w-4 h-4">
+                            <span class="text-gray-700">Wajib Submit Karya</span>
+                            <span class="text-xs text-gray-500">(Peserta harus submit hasil karya)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="requires_submission" value="0"
+                                   @checked($subLomba->requires_submission == 0)
+                                   class="w-4 h-4">
+                            <span class="text-gray-700">Hanya Registrasi</span>
+                            <span class="text-xs text-gray-500">(Peserta hanya perlu daftar)</span>
+                        </label>
+                    </div>
+                    @error('requires_submission')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <div class="flex justify-end gap-3">
                     <a href="{{ route('organizer.events.show', $event->events_id) }}"
                        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">

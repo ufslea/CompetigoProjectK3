@@ -48,7 +48,7 @@
                         <div class="text-sm text-gray-500">{{ $user->institusi ?? '-' }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}
+                        {{ $user->created_at->format('d M Y') }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <a href="{{ route('admin.users.show', $user->user_id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Detail</a>

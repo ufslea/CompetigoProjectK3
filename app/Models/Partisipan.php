@@ -17,11 +17,19 @@ class Partisipan extends Model
         'kontak',
         'file_karya',
         'status',
-        'registered_at'
+        'registered_at',
+        'verification_status',
+        'verification_notes',
+        'verified_at',
+        'verified_by',
+        'nominal_bayar',
+        'handle_sosmed',
+        'deskripsi_karya'
     ];
 
     protected $casts = [
         'registered_at' => 'datetime',
+        'verified_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -44,5 +52,10 @@ class Partisipan extends Model
     public function sertifikat()
     {
         return $this->hasOne(Sertifikat::class, 'partisipan_id', 'partisipan_id');
+    }
+
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by', 'user_id');
     }
 }

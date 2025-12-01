@@ -23,6 +23,7 @@ class EventSeeder extends Seeder
             'tanggal_mulai' => '2025-01-15',
             'tanggal_akhir' => '2025-02-15',
             'status' => 'active',
+            'gambar' => null,
         ]);
 
         Event::create([
@@ -33,6 +34,7 @@ class EventSeeder extends Seeder
             'tanggal_mulai' => '2025-02-01',
             'tanggal_akhir' => '2025-03-01',
             'status' => 'draft',
+            'gambar' => null,
         ]);
     }
 }

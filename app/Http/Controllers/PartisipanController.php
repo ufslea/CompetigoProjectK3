@@ -15,64 +15,66 @@ class PartisipanController extends Controller
     {
         if ($event_id) {
             $event = Event::findOrFail($event_id);
-            $participants = Partisipan::with(['user', 'sublomba'])
+            $partisipans = Partisipan::with(['user', 'sublomba'])
                 ->whereHas('sublomba', function($query) use ($event_id) {
                     $query->where('event_id', $event_id);
                 })
                 ->get();
             
             if (request()->routeIs('admin.events.participants.*')) {
-                return view('admin.events.participants.index', compact('participants', 'event'));
+                return view('admin.events.participants.index', compact('partisipans', 'event_id'));
             }
         }
         
-        $participants = Partisipan::with(['user', 'sublomba.event'])->get();
+        $partisipans = Partisipan::with(['user', 'sublomba'])->get();
         
         if (request()->routeIs('organizer.participants.*')) {
-            return view('organizer.participants.index', compact('participants'));
+            return view('organizer.participants.index', compact('partisipans'));
         } elseif (request()->routeIs('admin.events.participants.*')) {
-            return view('admin.events.participants.index', compact('participants', 'event_id'));
+            return view('admin.events.participants.index', compact('partisipans'));
         }
         
-        return view('partisipan.index', compact('participants'));
+        return view('partisipan.index', compact('partisipans'));
     }
 
     public function create($competition = null)
     {
         if ($competition) {
             $event = Event::findOrFail($competition);
-            $sublomba = $event->subLombas;
-            return view('participant.competitions.create', compact('event', 'sublomba'));
+            $sublombas = $event->subLombas;
+            return view('participant.competitions.create', compact('event', 'sublombas'));
         }
         
-        $events = Event::all();
+        $users = User::all();
         $sublombas = SubLomba::all();
-        return view('partisipan.create', compact('events', 'sublombas'));
+        return view('partisipan.create', compact('users', 'sublombas'));
     }
 
-    public function show($id)
+    public function store(Request $request)
     {
-        $partisipan = Partisipan::with(['user', 'sublomba.event'])->findOrFail($id);
-        
-        if (request()->routeIs('organizer.participants.*')) {
-            return view('organizer.participants.show', compact('partisipan'));
-        } elseif (request()->routeIs('admin.events.participants.*')) {
-            return view('admin.events.participants.show', compact('partisipan'));
-        }
-        
-        return view('partisipan.show', compact('partisipan'));
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'sublomba_id' => 'required|exists:sub_lomba,sublomba_id',
+            'institusi' => 'required',
+            'kontak' => 'required',
+            'file_karya' => 'nullable|string',
+            'status' => 'required|enum'
+        ]);
+
+        Partisipan::create($request->all());
+        return redirect()->route('partisipan.index')->with('success', 'Partisipan berhasil ditambahkan');
     }
 
-    public function edit($id)
+    public function edit($id, $competition = null)
     {
-        $partisipan = Partisipan::with(['user', 'sublomba'])->findOrFail($id);
+        $partisipan = Partisipan::findOrFail($id);
         $users = User::all();
         $sublombas = SubLomba::all();
         
         if (request()->routeIs('admin.events.participants.*')) {
             return view('admin.events.participants.edit', compact('partisipan', 'users', 'sublombas'));
         } elseif (request()->routeIs('participant.competitions.*')) {
-            $event = $partisipan->sublomba->event;
+            $event = $competition ? Event::findOrFail($competition) : $partisipan->sublomba->event;
             return view('participant.competitions.edit', compact('partisipan', 'users', 'sublombas', 'event'));
         }
         
@@ -85,46 +87,54 @@ class PartisipanController extends Controller
         
         // Untuk participant, bisa update institusi, kontak, dan file_karya
         if (request()->routeIs('participant.competitions.*')) {
-            $validated = $request->validate([
+            $request->validate([
                 'institusi' => 'required|string',
                 'kontak' => 'required|string',
                 'file_karya' => 'nullable|string',
             ]);
             
-            $partisipan->update($validated);
+            $partisipan->update($request->only(['institusi', 'kontak', 'file_karya']));
         } else {
-            // Untuk admin/organizer, bisa update status
-            $validated = $request->validate([
-                'status' => 'required|in:pending,approved,rejected,submitted',
-            ]);
-            
-            $partisipan->update($validated);
+            // Untuk admin, hanya bisa update status
+        $request->validate([
+            'status' => 'required|string',
+        ]);
+
+            $partisipan->update($request->only(['status']));
         }
         
         if (request()->routeIs('admin.events.participants.*')) {
-            return redirect()->route('admin.events.participants.index', $partisipan->sublomba->event_id)->with('success', 'Peserta berhasil diperbarui');
+            return redirect()->route('admin.events.participants.index', $partisipan->sublomba->event_id)->with('success', 'Partisipan berhasil diperbarui');
         } elseif (request()->routeIs('participant.competitions.*')) {
-            return redirect()->route('participant.competitions.show', $partisipan->sublomba->event_id)->with('success', 'Peserta berhasil diperbarui');
-        } elseif (request()->routeIs('organizer.participants.*')) {
-            return redirect()->route('organizer.participants.index')->with('success', 'Peserta berhasil diperbarui');
+            return redirect()->route('participant.competitions.show', $partisipan->sublomba->event_id)->with('success', 'Partisipan berhasil diperbarui');
         }
         
-        return redirect()->route('partisipan.index')->with('success', 'Peserta berhasil diperbarui');
+        return redirect()->route('partisipan.index')->with('success', 'Partisipan berhasil diperbarui');
     }
 
     public function destroy($id)
     {
         $partisipan = Partisipan::findOrFail($id);
-        $event_id = $partisipan->sublomba->event_id;
         $partisipan->delete();
         
-        if (request()->routeIs('admin.events.participants.*')) {
-            return redirect()->route('admin.events.participants.index', $event_id)->with('success', 'Peserta berhasil dihapus');
-        } elseif (request()->routeIs('participant.competitions.*')) {
-            return redirect()->route('participant.competitions.index')->with('success', 'Peserta berhasil dihapus');
+        if (request()->routeIs('participant.competitions.*')) {
+            return redirect()->route('participant.competitions.index')->with('success', 'Partisipan berhasil dihapus');
         }
         
-        return redirect()->route('organizer.participants.index')->with('success', 'Peserta berhasil dihapus');
+        return redirect()->route('partisipan.index')->with('success', 'Partisipan berhasil dihapus');
+    }
+
+    public function show($id)
+    {
+        $partisipan = Partisipan::with(['user', 'sublomba'])->findOrFail($id);
+        
+        if (request()->routeIs('organizer.participants.*')) {
+            return view('organizer.participants.show', compact('partisipan'));
+        } elseif (request()->routeIs('admin.events.participants.*')) {
+            return view('admin.events.participants.show', compact('partisipan'));
+        }
+        
+        return view('partisipan.show', compact('partisipan'));
     }
 
     public function register($competition)
@@ -139,10 +149,10 @@ class PartisipanController extends Controller
         $sublomba = $event->subLombas()->first();
         
         if (!$sublomba) {
-            return redirect()->back()->with('error', 'Tidak ada sub-lomba untuk event ini.');
+            return redirect()->back()->with('error', 'No sub-lomba found for this event.');
         }
 
-        $validated = $request->validate([
+        $request->validate([
             'institusi' => 'required|string',
             'kontak' => 'required|string',
         ]);
@@ -150,54 +160,13 @@ class PartisipanController extends Controller
         Partisipan::create([
             'user_id' => Auth::id(),
             'sublomba_id' => $sublomba->sublomba_id,
-            'institusi' => $validated['institusi'],
-            'kontak' => $validated['kontak'],
+            'institusi' => $request->institusi,
+            'kontak' => $request->kontak,
             'status' => 'pending',
-            'registered_at' => now(),
         ]);
 
         return redirect()->route('participant.competitions.show', $competition)
-            ->with('success', 'Registrasi berhasil!');
-    }
-
-    public function store(Request $request, $competition)
-    {
-        $event = Event::findOrFail($competition);
-        
-        $validated = $request->validate([
-            'sublomba_id' => 'required|integer|exists:sub_lomba,sublomba_id',
-            'institusi' => 'required|string|max:255',
-            'kontak' => 'required|string|max:255',
-            'file_karya' => 'nullable|string',
-        ]);
-
-        try {
-            // Check jika user sudah submit untuk sub-lomba ini
-            $existingSubmission = Partisipan::where('user_id', Auth::id())
-                ->where('sublomba_id', $validated['sublomba_id'])
-                ->first();
-
-            if ($existingSubmission) {
-                return back()->with('error', 'Anda sudah submit untuk sub-lomba ini. Gunakan edit untuk mengubah.');
-            }
-
-            $partisipan = Partisipan::create([
-                'user_id' => Auth::id(),
-                'sublomba_id' => $validated['sublomba_id'],
-                'institusi' => $validated['institusi'],
-                'kontak' => $validated['kontak'],
-                'file_karya' => $validated['file_karya'],
-                'status' => 'submitted',
-            ]);
-
-            return redirect()
-                ->route('participant.competitions.show', $competition)
-                ->with('success', 'Karya berhasil disubmit!');
-        } catch (\Exception $e) {
-            return back()
-                ->with('error', 'Gagal submit karya: ' . $e->getMessage())
-                ->withInput();
-        }
+            ->with('success', 'Registration successful!');
     }
 
     public function submit(Request $request, $competition)
@@ -206,11 +175,11 @@ class PartisipanController extends Controller
         $sublomba = $event->subLombas()->first();
         
         if (!$sublomba) {
-            return redirect()->back()->with('error', 'Tidak ada sub-lomba untuk event ini.');
+            return redirect()->back()->with('error', 'No sub-lomba found for this event.');
         }
 
-        $validated = $request->validate([
-            'file_karya' => 'nullable|string|url',
+        $request->validate([
+            'file_karya' => 'nullable|string',
         ]);
 
         $partisipan = Partisipan::where('user_id', Auth::id())
@@ -218,11 +187,11 @@ class PartisipanController extends Controller
             ->firstOrFail();
 
         $partisipan->update([
-            'file_karya' => $validated['file_karya'],
+            'file_karya' => $request->file_karya,
             'status' => 'submitted',
         ]);
 
         return redirect()->route('participant.competitions.show', $competition)
-            ->with('success', 'Pengiriman berhasil!');
+            ->with('success', 'Submission successful!');
     }
 }
