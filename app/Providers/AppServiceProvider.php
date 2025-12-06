@@ -19,6 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
+        // Certificate handling is done per-request in AuthenticatedSessionController
     }
 }

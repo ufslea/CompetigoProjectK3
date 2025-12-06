@@ -30,7 +30,7 @@ class User extends Authenticatable
     }
 
     // Relasi ke tabel Partisipan
-    public function partisipan()
+    public function partisipans()
     {
         return $this->hasMany(Partisipan::class, 'user_id', 'user_id');
     }
@@ -39,5 +39,17 @@ class User extends Authenticatable
     public function notifikasi()
     {
         return $this->hasMany(Notifikasi::class, 'user_id', 'user_id');
+    }
+
+    // Relasi ke tabel Laporan
+    public function laporans()
+    {
+        return $this->hasMany(Laporan::class, 'pelapor_id', 'user_id');
+    }
+
+    // Relasi ke tabel Favorit
+    public function favorits()
+    {
+        return $this->hasMany(Favorit::class, 'user_id', 'user_id');
     }
 }

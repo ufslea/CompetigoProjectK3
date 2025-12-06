@@ -139,7 +139,7 @@
 
     {{-- Pagination --}}
     <div class="mt-6">
-        {{ $hasil->links('pagination::tailwind') }}
+        {{ $hasil->appends(request()->query())->links('pagination::tailwind') }}
     </div>
 @endif
 @endsection

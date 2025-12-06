@@ -6,6 +6,8 @@ use App\Models\Partisipan;
 use App\Models\User;
 use App\Models\SubLomba;
 use App\Models\Event;
+use App\Events\PartisipanVerified;
+use App\Events\PartisipanRejected;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,28 +15,55 @@ class PartisipanController extends Controller
 {
     public function index($event_id = null)
     {
+        $search = request()->query('search', '');
+        $status = request()->query('status', '');
+        $verification_status = request()->query('verification_status', '');
+        
+        $query = Partisipan::with(['user', 'sublomba']);
+        
+        // Search by user name, email, or institusi
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', function($u) use ($search) {
+                    $u->where('nama', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })->orWhere('institusi', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filter by submission status
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        // Filter by verification status
+        if ($verification_status) {
+            $query->where('verification_status', $verification_status);
+        }
+        
         if ($event_id) {
             $event = Event::findOrFail($event_id);
-            $partisipans = Partisipan::with(['user', 'sublomba'])
-                ->whereHas('sublomba', function($query) use ($event_id) {
-                    $query->where('event_id', $event_id);
-                })
-                ->get();
+            $query->whereHas('sublomba', function($q) use ($event_id) {
+                $q->where('event_id', $event_id);
+            });
             
             if (request()->routeIs('admin.events.participants.*')) {
-                return view('admin.events.participants.index', compact('partisipans', 'event_id'));
+                $partisipans = $query->paginate(15);
+                return view('admin.events.participants.index', compact('partisipans', 'event_id', 'search', 'status', 'verification_status'));
             }
         }
         
-        $partisipans = Partisipan::with(['user', 'sublomba'])->get();
+        $partisipans = $query->orderBy('created_at', 'desc')->paginate(15);
         
         if (request()->routeIs('organizer.participants.*')) {
-            return view('organizer.participants.index', compact('partisipans'));
+            $participants = $partisipans;
+            return view('organizer.participants.index', compact('participants', 'search', 'status', 'verification_status'));
         } elseif (request()->routeIs('admin.events.participants.*')) {
-            return view('admin.events.participants.index', compact('partisipans'));
+            $participants = $partisipans;
+            return view('admin.events.participants.index', compact('participants', 'search', 'status', 'verification_status'));
         }
         
-        return view('partisipan.index', compact('partisipans'));
+        return view('partisipan.index', compact('partisipans', 'search', 'status', 'verification_status'));
     }
 
     public function create($competition = null)
@@ -193,5 +222,47 @@ class PartisipanController extends Controller
 
         return redirect()->route('participant.competitions.show', $competition)
             ->with('success', 'Submission successful!');
+    }
+
+    public function verify(Request $request, $id)
+    {
+        $partisipan = Partisipan::findOrFail($id);
+        
+        $request->validate([
+            'verification_notes' => 'nullable|string',
+        ]);
+
+        $partisipan->update([
+            'verification_status' => 'verified',
+            'verification_notes' => $request->verification_notes,
+            'verified_at' => now(),
+            'verified_by' => Auth::id(),
+        ]);
+
+        // Dispatch verification event for notification
+        PartisipanVerified::dispatch($partisipan, $request->verification_notes);
+
+        return redirect()->back()->with('success', 'Participant verified successfully!');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $partisipan = Partisipan::findOrFail($id);
+        
+        $request->validate([
+            'verification_notes' => 'nullable|string',
+        ]);
+
+        $partisipan->update([
+            'verification_status' => 'rejected',
+            'verification_notes' => $request->verification_notes,
+            'verified_at' => now(),
+            'verified_by' => Auth::id(),
+        ]);
+
+        // Dispatch rejection event for notification
+        PartisipanRejected::dispatch($partisipan, $request->verification_notes);
+
+        return redirect()->back()->with('success', 'Participant rejected successfully!');
     }
 }

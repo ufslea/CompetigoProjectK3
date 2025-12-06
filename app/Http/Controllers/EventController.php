@@ -14,18 +14,39 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::all();
+        $search = request()->query('search', '');
+        $status = request()->query('status', '');
+        
+        $query = Event::query();
+        
+        // Search by nama or deskripsi
+        if ($search) {
+            $query->where('nama', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+        }
+        
+        // Filter by status
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        // For organizer, filter by their events only
+        if (request()->routeIs('organizer.events.*')) {
+            $query->where('organizer_id', auth()->id());
+        }
+        
+        $events = $query->orderBy('created_at', 'desc')->paginate(12);
         
         // Check route context to return appropriate view
         if (request()->routeIs('organizer.events.*')) {
-            return view('organizer.events.index', compact('events'));
+            return view('organizer.events.index', compact('events', 'search', 'status'));
         } elseif (request()->routeIs('admin.events.*')) {
-            return view('admin.events.index', compact('events'));
+            return view('admin.events.index', compact('events', 'search', 'status'));
         } elseif (request()->routeIs('participant.competitions.*')) {
-            return view('participant.competitions.index', compact('events'));
+            return view('participant.competitions.index', compact('events', 'search', 'status'));
         }
         
-        return view('events.index', compact('events'));
+        return view('events.index', compact('events', 'search', 'status'));
     }
 
     /**
