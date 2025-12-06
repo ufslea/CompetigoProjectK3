@@ -12,17 +12,37 @@ class HasilController extends Controller
 {
     public function index()
     {
-        $hasil = Hasil::with(['partisipan', 'sublomba'])->get();
+        $search = request()->query('search', '');
+        $sublomba_filter = request()->query('sublomba', '');
         
-        if (request()->routeIs('organizer.results.*')) {
-            return view('organizer.results.index', compact('hasil'));
-        } elseif (request()->routeIs('admin.results.*')) {
-            return view('admin.results.index', compact('hasil'));
-        } elseif (request()->routeIs('participant.results.*')) {
-            return view('participant.results.index', compact('hasil'));
+        $query = Hasil::with(['partisipan', 'sublomba']);
+        
+        // Search by participant name or description
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('partisipan.user', function($u) use ($search) {
+                    $u->where('nama', 'like', "%{$search}%");
+                })->orWhere('deskripsi', 'like', "%{$search}%");
+            });
         }
         
-        return view('hasil.index', compact('hasil'));
+        // Filter by sub-lomba
+        if ($sublomba_filter) {
+            $query->where('sublomba_id', $sublomba_filter);
+        }
+        
+        $hasil = $query->orderBy('rank', 'asc')->paginate(15);
+        $sublombas = SubLomba::all();
+        
+        if (request()->routeIs('organizer.results.*')) {
+            return view('organizer.results.index', compact('hasil', 'search', 'sublomba_filter', 'sublombas'));
+        } elseif (request()->routeIs('admin.results.*')) {
+            return view('admin.results.index', compact('hasil', 'search', 'sublomba_filter', 'sublombas'));
+        } elseif (request()->routeIs('participant.results.*')) {
+            return view('participant.results.index', compact('hasil', 'search', 'sublomba_filter', 'sublombas'));
+        }
+        
+        return view('hasil.index', compact('hasil', 'search', 'sublomba_filter', 'sublombas'));
     }
 
     public function create()

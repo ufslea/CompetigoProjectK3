@@ -10,15 +10,32 @@ class PengumumanController extends Controller
 {
     public function index()
     {
-        $pengumumans = Pengumuman::with('event')->get();
+        $search = request()->query('search', '');
+        $event_filter = request()->query('event', '');
         
-        if (request()->routeIs('organizer.announcements.*')) {
-            return view('organizer.announcements.index', compact('pengumumans'));
-        } elseif (request()->routeIs('admin.announcements.*')) {
-            return view('admin.announcements.index', compact('pengumumans'));
+        $query = Pengumuman::with('event');
+        
+        // Search by judul or isi
+        if ($search) {
+            $query->where('judul', 'like', "%{$search}%")
+                  ->orWhere('isi', 'like', "%{$search}%");
         }
         
-        return view('pengumuman.index', compact('pengumumans'));
+        // Filter by event
+        if ($event_filter) {
+            $query->where('events_id', $event_filter);
+        }
+        
+        $pengumumans = $query->orderBy('created_at', 'desc')->paginate(15);
+        $events = Event::all();
+        
+        if (request()->routeIs('organizer.announcements.*')) {
+            return view('organizer.announcements.index', compact('pengumumans', 'search', 'event_filter', 'events'));
+        } elseif (request()->routeIs('admin.announcements.*')) {
+            return view('admin.announcements.index', compact('pengumumans', 'search', 'event_filter', 'events'));
+        }
+        
+        return view('pengumuman.index', compact('pengumumans', 'search', 'event_filter', 'events'));
     }
 
     public function create()

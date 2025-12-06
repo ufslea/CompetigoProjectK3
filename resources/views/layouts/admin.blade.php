@@ -27,7 +27,9 @@
 
     <div class="flex flex-1">
         {{-- Sidebar Admin --}}
-        @include('components.sidebar-admin')
+        <div class="w-64 bg-white shadow-xl border-r overflow-y-auto">
+            @include('components.sidebar-admin')
+        </div>
 
         {{-- Main Content --}}
         <main class="flex-1 bg-[#FFF7F4] p-8 overflow-y-auto">

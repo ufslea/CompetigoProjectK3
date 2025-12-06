@@ -21,17 +21,6 @@
 @section('title', 'Profil Saya')
 
 @section('content')
-@if($user->role === 'admin' || $user->role === 'organizer')
-<div class="flex">
-    @if($user->role === 'admin')
-        @include('components.sidebar-admin')
-    @else
-        @include('components.sidebar-organizer')
-    @endif
-
-    <div class="flex-1 px-8 py-6">
-        @include('components.navbar')
-@endif
 
         <div class="mb-8">
             <div class="flex justify-between items-center">
@@ -178,10 +167,4 @@
             </a>
         </div>
 
-@if($user->role === 'admin' || $user->role === 'organizer')
-    </div>
-</div>
-
-@include('components.footer')
-@endif
 @endsection

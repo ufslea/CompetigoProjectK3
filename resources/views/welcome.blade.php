@@ -38,15 +38,13 @@
             {{-- Auth Buttons --}}
             <div class="flex items-center gap-4">
                 @auth
-                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm capitalize">
-                        {{ Auth::user()->role }}
-                    </span>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button class="px-4 py-2 text-gray-700 hover:text-gray-900 transition">
-                            Logout
-                        </button>
-                    </form>
+                    <a href="{{ route('login') }}"
+                    " class="px-4 py-2 text-indigo-600 hover:text-indigo-700 font-semibold transition">
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}" class="px-6 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg transition hover-scale">
+                        Daftar
+                    </a>
                 @else
                     <a href="{{ route('login') }}" class="px-6 py-2 text-indigo-600 hover:text-indigo-700 font-semibold transition">
                         Login
@@ -75,16 +73,8 @@
                     
                     <div class="flex flex-col sm:flex-row gap-4 pt-4">
                         @auth
-                            <a href="
-                                @if (Auth::user()->role === 'participant')
-                                    {{ route('participant.dashboard') }}
-                                @elseif (Auth::user()->role === 'organizer')
-                                    {{ route('organizer.dashboard') }}
-                                @elseif (Auth::user()->role === 'admin')
-                                    {{ route('admin.dashboard') }}
-                                @endif
-                            " class="px-8 py-4 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg transition hover-scale text-center">
-                                Masuk Dashboard
+                            <a href="{{ route('register') }}" class="px-8 py-4 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg transition hover-scale text-center">
+                                Daftar Sekarang
                             </a>
                         @else
                             <a href="{{ route('register') }}" class="px-8 py-4 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:shadow-lg transition hover-scale text-center">
@@ -212,9 +202,11 @@
                         {{ route('participant.competitions.index') }}
                     @elseif (Auth::user()->role === 'organizer')
                         {{ route('organizer.events.index') }}
+                    @elseif (Auth::user()->role === 'admin')
+                        {{ route('admin.dashboard') }}
                     @endif
                 " class="inline-block px-8 py-4 rounded-lg bg-white text-indigo-600 font-semibold hover:shadow-lg transition hover-scale">
-                    Lihat Kompetisi
+                    Mulai Sekarang
                 </a>
             @else
                 <a href="{{ route('register') }}" class="inline-block px-8 py-4 rounded-lg bg-white text-indigo-600 font-semibold hover:shadow-lg transition hover-scale">

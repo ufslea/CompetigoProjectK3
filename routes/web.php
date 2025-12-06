@@ -50,17 +50,21 @@ Route::middleware(['auth', 'organizer'])
         Route::put('/events/{id}', [EventController::class, 'update'])->name('events.update');
         Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 
-        // SUB-LOMBA
-        Route::get('/events/{event_id}/sublomba', [SubLombaController::class, 'index'])->name('sublomba.index');
-        Route::get('/events/{event_id}/sublomba/create', [SubLombaController::class, 'create'])->name('sublomba.create');
-        Route::post('/events/{event_id}/sublomba', [SubLombaController::class, 'store'])->name('sublomba.store');
-        Route::get('/sublomba/{id}/edit', [SubLombaController::class, 'edit'])->name('sublomba.edit');
-        Route::put('/sublomba/{id}', [SubLombaController::class, 'update'])->name('sublomba.update');
-        Route::delete('/sublomba/{id}', [SubLombaController::class, 'destroy'])->name('sublomba.destroy');
+        // SUB-LOMBA (nested under events)
+        Route::prefix('events/{event_id}/sublomba')->as('events.sublomba.')->group(function () {
+            Route::get('/', [SubLombaController::class, 'index'])->name('index');
+            Route::get('/create', [SubLombaController::class, 'create'])->name('create');
+            Route::post('/', [SubLombaController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [SubLombaController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [SubLombaController::class, 'update'])->name('update');
+            Route::delete('/{id}', [SubLombaController::class, 'destroy'])->name('destroy');
+        });
 
         // PARTICIPANTS
         Route::get('/participants', [PartisipanController::class, 'index'])->name('participants.index');
         Route::get('/participants/{id}', [PartisipanController::class, 'show'])->name('participants.show');
+        Route::post('/participants/{id}/verify', [PartisipanController::class, 'verify'])->name('participants.verify');
+        Route::post('/participants/{id}/reject', [PartisipanController::class, 'reject'])->name('participants.reject');
 
         // ANNOUNCEMENTS
         Route::get('/announcements', [PengumumanController::class, 'index'])->name('announcements.index');
@@ -77,6 +81,7 @@ Route::middleware(['auth', 'organizer'])
         Route::post('/results', [HasilController::class, 'store'])->name('results.store');
         Route::get('/results/{id}/edit', [HasilController::class, 'edit'])->name('results.edit');
         Route::put('/results/{id}', [HasilController::class, 'update'])->name('results.update');
+        Route::delete('/results/{id}', [HasilController::class, 'destroy'])->name('results.destroy');
 
         // USER PROFILE
         Route::get('/profile', [OrganizerProfileController::class, 'index'])->name('profile.index');
@@ -98,6 +103,7 @@ Route::prefix('admin')
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::get('/{user}', [UserController::class, 'show'])->name('show');
             Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+            Route::put('/{user}', [UserController::class, 'update'])->name('update');
         });
 
         // EVENTS
@@ -211,7 +217,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

@@ -1,4 +1,4 @@
-<aside class="w-64 bg-white shadow-xl h-screen fixed top-0 left-0 pt-24 px-4 border-r overflow-y-auto">
+<aside class="px-4 py-4">
 
     <h2 class="text-gray-700 text-sm font-semibold mb-4 uppercase">Admin Menu</h2>
 

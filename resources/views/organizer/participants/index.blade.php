@@ -143,7 +143,7 @@
 
             {{-- Pagination --}}
             <div class="mt-6">
-                {{ $participants->links('pagination::tailwind') }}
+                {{ $participants->appends(request()->query())->links('pagination::tailwind') }}
             </div>
         @endif
     </div>
